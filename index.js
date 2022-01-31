@@ -1,8 +1,7 @@
-// TODO: Include packages needed for this application
 const inquirer = require('inquirer');
-const axios = require('axios');
 const fs = require('fs');
-// TODO: Create an array of questions for user input
+const generateMarkdown = require('./utils/generateMarkdown.js');
+
 const questions = [
   {
     type: 'input',
@@ -30,11 +29,10 @@ const questions = [
 
   {
     type: 'input',
-    message: 'Please provide your email',
+    message: 'Please provide your email.',
     name: 'email',
   },  
 
-  // Table of contents stuff
   {
     type: 'input',
     message: 'Please describe the steps required to install your project.',
@@ -46,17 +44,47 @@ const questions = [
     message: 'Provide instructions and examples on how to use your project.',
     name: 'usage'
   },
+
+  {
+    type: 'list',
+    message: 'What license does your project use?',
+    name: 'license',
+    choices: ['none'],
+  },
+
+  {
+    type: 'input',
+    message: 'Who has contributed?',
+    name: 'contributions',
+  },
+
+  {
+    type: 'input',
+    message: 'How is this project tested?',
+    name: 'tests',
+  },
+
 ];
 
-// TODO: Create a function to write README file
-inquirer
-  .prompt(questions)
+function init() {
+  inquirer.prompt(questions)
+      .then(function(answer) {
+          console.log(answer);
+      var fileContent = generateMarkdown(answer);
+      writeToFile(fileContent)
+      });
+};
 
-function appendFile(fileName, data) {
-    fs.appendFile(fileName, data, err => {
-        if (err) {
-          return console.log(err);
-        }
-        console.log("Success! Your README.md file has been generated")
-    });
-}
+const writeToFile = fileContent => {
+  fs.writeFile('./generatedREADME.md', fileContent, err => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log("README was successfully created !!!");
+  });
+};
+
+init();
+
+module.exports = questions;
